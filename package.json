@@ -4,7 +4,8 @@
   "private": true,
   "devDependencies": {
     "cross-env": "^4.0.0",
-    "react-scripts": "0.9.5"
+    "react-scripts": "0.9.5",
+    "conduit-node": "git@github.com:gothinkster/node-express-realworld-example-app.git"
   },
   "dependencies": {
     "history": "^4.6.3",
@@ -23,8 +24,11 @@
     "superagent-promise": "^1.1.0"
   },
   "scripts": {
-    "start": "cross-env PORT=4100 react-scripts start",
-    "build": "react-scripts build",
+    "start": "docker-compose up",
+    "start:dev": "cross-env PORT=4100 react-scripts start",
+    "build": "NODE_ENV=production react-scripts build && npm run build:docker:frontend && npm run build:docker:backend",
+    "build:docker:frontend": "docker build . -t giltayar/realworld-frontend-testing",
+    "build:docker:backend": "cp -R node-conduit-additions/ node_modules/conduit-node && docker build node_modules/conduit-node -t giltayar/realworld-frontend-testing-backend",
     "test": "cross-env PORT=4100 react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
