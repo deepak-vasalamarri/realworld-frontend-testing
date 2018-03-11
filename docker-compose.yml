@@ -15,9 +15,8 @@ services:
     image: giltayar/realworld-frontend-testing
     ports:
       - "3000:80"
-    command: [nginx-debug, '-g', 'daemon off;']
 
   db:
-    image: mongo
+    image: mongo:3.4
     expose:
       - 27017
