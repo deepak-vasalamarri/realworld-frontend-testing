@@ -42,7 +42,8 @@
     "build": "NODE_ENV=production react-scripts build && npm run build:docker:frontend && npm run build:docker:backend",
     "build:docker:frontend": "docker build . -t giltayar/realworld-frontend-testing",
     "build:docker:backend": "cp -R node-conduit-additions/ node_modules/conduit-node && docker build node_modules/conduit-node -t giltayar/realworld-frontend-testing-backend",
-    "test": "cross-env PORT=4100 react-scripts test --env=jsdom",
+    "test": "docker-compose kill && docker-compose rm -fsv && docker-compose up -d && npm run test:mocha && docker-compose kill && docker-compose rm -fv",
+    "test:mocha": "mocha --no-timeouts",
     "eject": "react-scripts eject"
   }
 }
