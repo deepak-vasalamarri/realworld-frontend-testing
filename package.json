@@ -12,6 +12,7 @@
   "author": "Gil Tayar <gil@tayar.org>",
   "devDependencies": {
     "chai": "^4.1.2",
+    "chai-image-assert": "^1.2.0",
     "chromedriver": "^2.36.0",
     "conduit-node": "git+ssh://git@github.com/gothinkster/node-express-realworld-example-app.git#ba04b70",
     "cross-env": "^4.0.0",

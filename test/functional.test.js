@@ -5,9 +5,22 @@ const webdriver = require('selenium-webdriver')
 require('chromedriver')
 const {By, until, Key} = webdriver
 
+require('chai').use(require('chai-image-assert')(__dirname))
+
 describe('registration page', function() {
+  const chromeCapabilities = webdriver.Capabilities.chrome()
+  chromeCapabilities.set('chromeOptions', {
+    args: ['--window-size=1024,900' /*, '--headless', '--disable-gpu'*/],
+  })
+
   let driver
-  before(async () => (driver = await new webdriver.Builder().forBrowser('chrome').build()))
+  before(
+    async () =>
+      (driver = await new webdriver.Builder()
+        .withCapabilities(chromeCapabilities)
+        .forBrowser('chrome')
+        .build()),
+  )
   after(async () => await driver.quit())
 
   async function waitFor(selector) {
@@ -25,10 +38,16 @@ describe('registration page', function() {
     await element.click()
   }
 
-  async function getText(selector) {
+  async function getText(selector) { // eslint-disable-line
     const element = await driver.findElement(By.css(selector))
 
     return await element.getText()
+  }
+
+  async function checkWindow(baseImageName) {
+    const image = await driver.takeScreenshot()
+
+    expect(Buffer.from(image, 'base64')).to.matchImage(baseImageName)
   }
 
   it('should not allow a blank email', async () => {
@@ -47,7 +66,7 @@ describe('registration page', function() {
     // validate: there is an error message
     await waitFor('.error-messages')
 
-    expect(await getText('.error-messages')).to.include("email can't be blank")
+    await checkWindow('registration-blank-email-error')
   })
 
   it('should do the main flow correctly', async () => {
@@ -77,16 +96,9 @@ describe('registration page', function() {
   }
 
   async function validateUserHomePage() {
-    await waitFor('img[alt=ausername]')
+    await waitFor('.article-preview')
 
-    // validate username
-    expect(await getText('a[href="/@ausername"]')).to.equal('ausername')
-
-    // validate articles list
-    expect(await getText('.article-preview')).to.equal('No articles are here... yet.')
-
-    // validate active tab
-    expect(await getText('.nav-link.active')).to.equal('Your Feed')
+    await checkWindow('empty-user-home-page')
   }
 
   async function publishPost() {
@@ -112,16 +124,9 @@ describe('registration page', function() {
   }
 
   async function validatePost() {
-    await waitFor('h1')
+    await waitFor('.article-content')
 
-    // validate title
-    expect(await getText('h1')).to.equal('a title')
-
-    // validate article content
-    expect(await getText('.article-content')).to.include('wonderful')
-
-    // validate tags
-    expect(await getText('.tag-list')).to.equal('abc')
+    await checkWindow('new-post')
   }
 
   async function addComment() {
@@ -135,11 +140,7 @@ describe('registration page', function() {
   async function validateComment() {
     await waitFor('div.card .card-block')
 
-    // validate comment text
-    expect(await getText('div.card .card-block')).to.equal('a comment')
-
-    // validate comment username
-    expect(await getText('div.card a.comment-author:nth-child(2)')).to.equal('ausername')
+    await checkWindow('new-comment')
   }
 
   async function logout() {
@@ -153,37 +154,13 @@ describe('registration page', function() {
   }
 
   async function validateBlog() {
-    // goto home page
     await driver.get('http://localhost:3000/')
 
-    // validate post author
-    expect(await getText('a.author')).to.equal('ausername')
+    await checkWindow('anonymous-home-page')
 
-    // validate post title
-    expect(await getText('.article-preview h1')).to.equal('a title')
-
-    // validate post description
-    expect(await getText('.article-preview h1 + p')).to.equal('something')
-
-    // validate post tags
-    expect(await getText('.article-preview ul')).to.equal('abc')
-
-    // validate popular tags
-    expect(await getText('.sidebar .tag-list')).to.equal('abc')
-
-    // action: goto post page
     await click('.article-preview h1')
     await waitFor('.article-page')
 
-    // validate post title
-    expect(await getText('h1')).to.equal('a title')
-
-    // validate article description
-    expect(await getText('div.article-content p')).to.equal('wonderful')
-
-    // validate article tags
-    expect(await getText('ul.tag-list')).to.equal('abc')
-
-    // ...
+    await checkWindow('anonymous-blog-post-view')
   }
 })
