@@ -2,6 +2,7 @@
 const {describe, it, before, after} = require('mocha')
 const {expect} = require('chai')
 const webdriver = require('selenium-webdriver')
+const {Eyes} = require('eyes.selenium')
 require('chromedriver')
 const {By, until, Key} = webdriver
 
@@ -22,6 +23,15 @@ describe('registration page', function() {
         .build()),
   )
   after(async () => await driver.quit())
+
+  let eyes
+  before(async () => {
+    eyes = new Eyes()
+    eyes.setApiKey(process.env.APPLITOOLS_API_KEY)
+
+    await eyes.open(driver, 'Test', 'Realworld', {width: 800, height: 600})
+  })
+  after(async () => await eyes.close())
 
   async function waitFor(selector) {
     await driver.wait(until.elementLocated(By.css(selector)))
@@ -45,9 +55,7 @@ describe('registration page', function() {
   }
 
   async function checkWindow(baseImageName) {
-    const image = await driver.takeScreenshot()
-
-    expect(Buffer.from(image, 'base64')).to.matchImage(baseImageName)
+    await eyes.checkWindow(baseImageName)
   }
 
   it('should not allow a blank email', async () => {
