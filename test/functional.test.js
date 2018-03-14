@@ -10,7 +10,7 @@ require('chai').use(require('chai-image-assert')(__dirname))
 describe('registration page', function() {
   const chromeCapabilities = webdriver.Capabilities.chrome()
   chromeCapabilities.set('chromeOptions', {
-    args: ['--window-size=1024,900' /*, '--headless', '--disable-gpu'*/],
+    args: ['--window-size=1024,900', '--headless', '--disable-gpu'],
   })
 
   let driver
