@@ -33,7 +33,7 @@ $ npm test
 
 ```js
   onSubmit: (username, email, password) => {
-    dispatch({ type: UPDATE_FIELD_AUTH, key: 'password', value: '' }) // add this line
+    dispatch({ type: UPDATE_FIELD_AUTH, key: 'username', value: '' }) // add this line
     const payload = agent.Auth.register(username, email, password);
     dispatch({ type: REGISTER, payload })
 ```
