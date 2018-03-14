@@ -48,18 +48,14 @@
     await driver.get('http://localhost:3000/register')
 
     // action: set username, password, email to something
-    const userNameField = await driver.findElement(By.css('input[placeholder=Username]'))
-    await userNameField.sendKeys('ausername')
+    await setText('input[placeholder=Username]', 'ausername')
 
-    const passwordField = await driver.findElement(By.css('input[placeholder=Password]'))
-    await passwordField.sendKeys('aPassword')
+    await setText('input[placeholder=Password]', 'aPassword')
 
-    const emailField = await driver.findElement(By.css('input[placeholder=Email]'))
-    await emailField.sendKeys('an@email.com')
+    await setText('input[placeholder=Email]', 'an@email.com')
 
     // action: submit form
-    const submit = await driver.findElement(By.css('button[type=submit]'))
-    await submit.click()
+    await click('button[type=submit]')
   }
 ```
 
